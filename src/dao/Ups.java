@@ -1,36 +1,64 @@
 package dao;
 
 import java.sql.*;
-import java.util.ResourceBundle;
 
 public class Ups {
 
-    private ResourceBundle rb;
-    private Connection con;
+    DBConnection dbConnection = new DBConnection(DB.MYSQL);
     private Statement st;
-    {
-        rb = ResourceBundle.getBundle("mysqldb");
-        try {
-            con = DriverManager.getConnection(
-                    rb.getString("database.url"),
-                    rb.getString("database.username"),
-                    rb.getString("database.password"));
-            st = con.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void main() {
 
+
+        st =  dbConnection.getStatement();
+
         getAllEmployees();
         getAllTasks();
-        getAllEmployeeByDepartmentId(102);
+        getAllEmployeeByDepartmentId("logistic");
+        addTaskForEmployee(1001, "weekly report");
+        getAllTasksForEmployee(1001);
+        deleteEmployee(1005);
+        getAllEmployees();
     }
 
-    private void getAllEmployeeByDepartmentId(int deptId) {
+    private void deleteEmployee(int empId) {
         try {
-            ResultSet rs = st.executeQuery("SELECT * FROM employees WHERE dept_id=" + deptId);
+            PreparedStatement pst = dbConnection.getPreparedStatement("DELETE FROM employees WHERE id=?");
+            pst.setInt(1, empId);
+            pst.executeUpdate();
+//            pst.executeUpdate("DELETE FROM employees WHERE id=" + empId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println();
+    }
+
+    private void getAllTasksForEmployee(int empId) {
+        try {
+            ResultSet rs = st.executeQuery("SELECT * FROM tasks WHERE emp_id=" + empId);
+            printRow(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println();
+    }
+
+    private boolean addTaskForEmployee(int empId, String task) {
+
+        try {
+            st.executeUpdate("INSERT INTO tasks (description, emp_id) VALUES ('" + task + "', " + empId + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        System.out.println();
+        return true;
+    }
+
+    private void getAllEmployeeByDepartmentId(String department) {
+        try {
+            ResultSet rs = st.executeQuery("SELECT employees.last_name, employees.first_name FROM employees JOIN departments ON " +
+                    "employees.dept_id = departments.id WHERE departments.name='" + department + "'");
             printRow(rs);
         } catch (SQLException e) {
             e.printStackTrace();
