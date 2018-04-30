@@ -4,25 +4,28 @@ DROP TABLE IF EXISTS departments;
 
 CREATE TABLE departments
 (
-  id     INTEGER   NOT NULL PRIMARY KEY,
+  id     INTEGER   NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name   CHAR (30) NOT NULL,
   phone  CHAR (15)
 );
+ALTER TABLE departments AUTO_INCREMENT = 100;
 
 CREATE TABLE employees
 (
-  id          INTEGER NOT NULL PRIMARY KEY,
+  id          INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   last_name   VARCHAR (20) NOT NULL,
   first_name  VARCHAR (10) NOT NULL,
   post        VARCHAR (20),
   dept_id     INTEGER,
   FOREIGN KEY (dept_id) REFERENCES departments (id) ON DELETE CASCADE
 );
+ALTER TABLE employees AUTO_INCREMENT = 1000;
 
 CREATE TABLE tasks
 (
-  id          INTEGER NOT NULL PRIMARY KEY,
+  id          INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
   description VARCHAR (50) NOT NULL,
   emp_id      INTEGER,
   FOREIGN KEY (emp_id) REFERENCES employees (id) ON DELETE CASCADE
 );
+ALTER TABLE tasks AUTO_INCREMENT = 10000;
